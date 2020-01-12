@@ -67,14 +67,24 @@ header("Content-type: text/html; charset=utf-8");
 http_response_code(200);
 exit(json_encode($rows, JSON_UNESCAPED_UNICODE));
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// Date check
+/**
+ * Date check.
+ * @param string $date Date for check.
+ * @return boolean True, if $date like "yyyy-mm-dd".
+ */
 function dateCheck($date) {
 	return preg_match('/\d{4}\-\d{2}\-\d{2}/', $date) && checkdate(substr($date,5,2), substr($date,8,2), substr($date,0,4));
 }
 
-// Creating PDO Object
+/**
+ * Creating PDO Object.
+ * @param string $db_host
+ * @param string $db_name
+ * @param string $db_char charset
+ * @param string $db_user
+ * @param string $db_pass
+ * @return object PDO Object
+ */
 function createPDO($db_host, $db_name, $db_char, $db_user, $db_pass) {
 	$dsn = "mysql:unix_socket=" . $db_host . ";dbname=" . $db_name . ";charset=" . $db_char;
 	$opt  = array(
