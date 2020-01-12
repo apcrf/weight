@@ -10,9 +10,33 @@ class ComposerStaticInit0624cd39affe5a189d5f0e16ffac71bb
         '2371fe58591751a9b725c6706865644e' => __DIR__ . '/..' . '/lichtner/fluentpdo/FluentPDO/FluentPDO.php',
     );
 
+    public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'M' => 
+        array (
+            'Monolog\\' => 8,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'Monolog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0624cd39affe5a189d5f0e16ffac71bb::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0624cd39affe5a189d5f0e16ffac71bb::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

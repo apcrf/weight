@@ -1,4 +1,5 @@
 <?php
+date_default_timezone_set("Etc/GMT+3");
 
 // Checking parameters
 if (isset($_REQUEST["date_start"]) && !dateCheck($_REQUEST["date_start"])) {
@@ -12,6 +13,15 @@ if (!isset($_REQUEST["detalization"]) || !in_array($_REQUEST["detalization"], ["
 }
 
 require __DIR__ . "/vendor/autoload.php";
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+// Create a log channel
+$log = new Logger("weight");
+$log->pushHandler(new StreamHandler(__DIR__ . "/app.log", Logger::DEBUG));
+// Add records to the log
+$log->info("Script run.");
+
 // Database Connection Settings
 require_once "config.php";
 // Creating PDO Object
