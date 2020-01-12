@@ -11,59 +11,53 @@ if (!isset($_REQUEST["detalization"]) || !in_array($_REQUEST["detalization"], ["
 	$_REQUEST["detalization"] = "day";
 }
 
+require __DIR__ . "/vendor/autoload.php";
 // Database Connection Settings
 require_once "config.php";
-
 // Creating PDO Object
 $pdo = createPDO(DB_HOST, DB_NAME, DB_CHAR, DB_USER, DB_PASS);
+// Creating Fluent PDO Object
+$fpdo = new FluentPDO($pdo);
 
-// SQL
+// detalization
 switch ($_REQUEST["detalization"]) {
 	case "day" :
-		$sql = "SELECT `weight_date` AS `period`, ROUND(AVG(`weight_value`)) AS `avg`";
+		$selectTxt = "weight_date AS period, ROUND(AVG(weight_value)) AS avg";
 		break;
 	case "week" :
-		$sql = "SELECT DATE_FORMAT(`weight_date`, '%Y-%u') AS `period`, ROUND(AVG(`weight_value`)) AS `avg`";
+		$selectTxt = "DATE_FORMAT(weight_date, '%Y-%u') AS period, ROUND(AVG(weight_value)) AS avg";
 		break;
 	case "month" :
-		$sql = "SELECT DATE_FORMAT(`weight_date`, '%Y-%m') AS `period`, ROUND(AVG(`weight_value`)) AS `avg`";
+		$selectTxt = "DATE_FORMAT(weight_date, '%Y-%m') AS period, ROUND(AVG(weight_value)) AS avg";
 		break;
 }
 
-$sql .= " FROM `weight`";
-
-// date_start & date_end
-$dates = [];
+// conditions: date_start & date_end
+$whereTxt = [];
+$whereVal = [];
 if (isset($_REQUEST["date_start"])) {
-	$dates[] = "`weight_date` >= '{$_REQUEST["date_start"]}'";
+	$whereTxt[] = "weight_date >= :date_start";
+	$whereVal[":date_start"] = $_REQUEST["date_start"];
 }
 if (isset($_REQUEST["date_end"])) {
-	$dates[] = "`weight_date` <= '{$_REQUEST["date_end"]}'";
+	$whereTxt[] = "weight_date <= :date_end";
+	$whereVal[":date_end"] = $_REQUEST["date_end"];
 }
-if ($dates) {
-	$sql .= " WHERE " . implode(" AND ", $dates);
-}
-
-$sql .= " GROUP BY `period`";
+$whereTxt = implode(" AND ", $whereTxt);
 
 // Load data
-// PDO::FETCH_NUM возвращает массив, индексированный номерами столбцов (для использования в highcharts)
-$stmt = $pdo->prepare($sql);
-$params = [
-];
-if ($stmt->execute($params)) {
-	if ($rows = $stmt->fetchAll(PDO::FETCH_NUM)) {
-		header("Content-type: text/html; charset=utf-8");
-		http_response_code(200);
-		exit(json_encode($rows, JSON_UNESCAPED_UNICODE));
-	}
-	else {
-		exit("Error fetching data");
-	}
+$rows = [];
+$query = $fpdo->from("weight")->select($selectTxt)->where($whereTxt, $whereVal)->groupBy("period");
+foreach ($query as $row) {
+	$rows[] = [ $row["period"], $row["avg"] ];
 }
-else {
-	exit("Query execution error");
-}
+
+// Output data
+header("Content-type: text/html; charset=utf-8");
+http_response_code(200);
+exit(json_encode($rows, JSON_UNESCAPED_UNICODE));
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Date check
 function dateCheck($date) {
