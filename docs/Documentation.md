@@ -3,7 +3,9 @@
 Вывод средних данных за любой интервал, с нужным уровнем детализации.  
 
 Примеры запуска скрипта  
-http://localhost/weight/app/weight.php http://localhost/weight/app/weight.php?date_start=2019-02-01   http://localhost/weight/app/weight.php?detalization=week  
+http://localhost/weight/app/weight.php  
+http://localhost/weight/app/weight.php?date_start=2019-02-01  
+http://localhost/weight/app/weight.php?detalization=week  
 http://localhost/weight/app/weight.php?date_start=2019-02-01&date_end=2019-12-10&detalization=month  
 
 Скрипт возвращает JSON  
