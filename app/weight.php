@@ -13,8 +13,8 @@ $pdo = createPDO(DB_HOST, DB_NAME, DB_CHAR, DB_USER, DB_PASS);
 
 // Load data
 $sql = "
-	SELECT weight_date, weigth_value
-	FROM weigth
+	SELECT weight_date, weight_value
+	FROM weight
 	WHERE true
 ";
 $stmt = $pdo->prepare($sql);
